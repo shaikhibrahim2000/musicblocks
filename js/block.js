@@ -1497,7 +1497,7 @@ class Block {
                 that.collapseButtonBitmap = new createjs.Bitmap(image);
                 that.collapseButtonBitmap.scaleX =
                     that.collapseButtonBitmap.scaleY =
-                    that.collapseButtonBitmap.scale =
+                that.collapseButtonBitmap.scale =
                     that.protoblock.scale / 3;
                 that.container.addChild(that.collapseButtonBitmap);
                 that.collapseButtonBitmap.x = 2 * that.protoblock.scale;
@@ -1508,6 +1508,10 @@ class Block {
                 }
 
                 that.collapseButtonBitmap.visible = !that.collapsed;
+                that.collapseButtonBitmap.on("click", (event) => {
+                    event.stopPropagation();
+                    that.collapseToggle();
+                });
 
                 __finishCollapse(that);
             };
@@ -1540,6 +1544,11 @@ class Block {
                 } else {
                     that.expandButtonBitmap.y = 10 * that.protoblock.scale;
                 }
+
+                that.expandButtonBitmap.on("click", (event) => {
+                    event.stopPropagation();
+                    that.collapseToggle();
+                });
 
                 __processCollapseButton(that);
             };
