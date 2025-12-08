@@ -3157,12 +3157,35 @@ class Block {
                 // Otherwise, process move.
                 // Also, keep track of the time of the last move.
                 this.blocks.mouseDownTime = new Date().getTime();
+                
+                // Check if this block was inside a collapsed parent before the move
+                const parentExpandableBlk = this.blocks.insideExpandableBlock(thisBlock);
+                
                 this.blocks.blockMoved(thisBlock);
+
+                // Update collapsed shape of parent block if it's collapsed
+                // This ensures the collapsed shape updates immediately when a block is dragged out
+                if (parentExpandableBlk !== null) {
+                    const parentBlock = this.blocks.blockList[parentExpandableBlk];
+                    if (parentBlock.collapsed && parentBlock.updateCollapsedShape) {
+                        parentBlock.updateCollapsedShape();
+                    }
+                }
 
                 // Just in case the blocks are not properly docked after
                 // the move (workaround for issue #38 -- Blocks fly
                 // apart). Still need to get to the root cause.
                 this.blocks.adjustDocks(this.blocks.blockList.indexOf(this), true);
+                
+                // After adjusting docks, check if this block is now inside a collapsed parent
+                // and update the parent's collapsed shape (for when blocks are added back)
+                const newParentExpandableBlk = this.blocks.insideExpandableBlock(thisBlock);
+                if (newParentExpandableBlk !== null) {
+                    const newParentBlock = this.blocks.blockList[newParentExpandableBlk];
+                    if (newParentBlock.collapsed && newParentBlock.updateCollapsedShape) {
+                        newParentBlock.updateCollapsedShape();
+                    }
+                }
             }
         } else if (
             SPECIALINPUTS.includes(this.name) ||
