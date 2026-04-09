@@ -413,7 +413,7 @@ const piemenuPitches = (block, noteLabels, noteValues, accidentals, note, accide
                 0,
                 Math.round(
                     (x + block.activity.blocksContainer.x) * block.activity.getStageScale() +
-                        canvasLeft
+                    canvasLeft
                 ) - halfWheelSize
             )
         ) + "px";
@@ -424,7 +424,7 @@ const piemenuPitches = (block, noteLabels, noteValues, accidentals, note, accide
                 0,
                 Math.round(
                     (y + block.activity.blocksContainer.y) * block.activity.getStageScale() +
-                        canvasTop
+                    canvasTop
                 ) - halfWheelSize
             )
         ) + "px";
@@ -488,8 +488,8 @@ const piemenuPitches = (block, noteLabels, noteValues, accidentals, note, accide
             (block.name === "notename" &&
                 (block.connections[0] !== undefined
                     ? !["setkey", "setkey2"].includes(
-                          block.blocks.blockList[block.connections[0]].name
-                      )
+                        block.blocks.blockList[block.connections[0]].name
+                    )
                     : true)))
     ) {
         if (scale[6 - i][0] === FIXEDSOLFEGE[note] || scale[6 - i][0] === note) {
@@ -724,8 +724,8 @@ const piemenuPitches = (block, noteLabels, noteValues, accidentals, note, accide
             (that.name === "notename" &&
                 (that.connections[0] !== undefined
                     ? !["setkey", "setkey2"].includes(
-                          that.blocks.blockList[that.connections[0]].name
-                      )
+                        that.blocks.blockList[that.connections[0]].name
+                    )
                     : true))
         ) {
             let i = scale.indexOf(selection["note"]);
@@ -1120,7 +1120,7 @@ const piemenuCustomNotes = (block, noteLabels, customLabels, selectedCustom, sel
                 0,
                 Math.round(
                     (x + block.activity.blocksContainer.x) * block.activity.getStageScale() +
-                        canvasLeft
+                    canvasLeft
                 ) - 200
             )
         ) + "px";
@@ -1131,7 +1131,7 @@ const piemenuCustomNotes = (block, noteLabels, customLabels, selectedCustom, sel
                 0,
                 Math.round(
                     (y + block.activity.blocksContainer.y) * block.activity.getStageScale() +
-                        canvasTop
+                    canvasTop
                 ) - 200
             )
         ) + "px";
@@ -1236,109 +1236,34 @@ const piemenuCustomNotes = (block, noteLabels, customLabels, selectedCustom, sel
         that.container.setChildIndex(that.text, that.container.children.length - 1);
         that.updateCache();
 
+        // Ensure audio context is started (required by modern browsers).
         try {
-            // Ensure audio context is started (required by modern browsers)
             await Tone.start();
         } catch (e) {
             console.debug("Tone.start() skipped or failed", e);
         }
 
-        // Ensure synth is initialized before proceeding
-        if (!that.activity.logo.synth) {
-            return;
+        const tur = that.activity.turtles.ithTurtle(0);
+
+        if (!tur.singer.instrumentNames.includes(DEFAULTVOICE)) {
+            that.activity.logo.synth.createDefaultSynth(0);
+            that.activity.logo.synth.loadSynth(0, DEFAULTVOICE);
         }
 
-        // Always ensure tone is initialized
-        if (!that.activity.logo.synth.tone) {
-            that.activity.logo.synth.newTone();
-        }
+        that.activity.logo.synth.setMasterVolume(PREVIEWVOLUME);
+        that.activity.logo.synth.setVolume(0, DEFAULTVOICE, PREVIEWVOLUME);
 
-        // Create and load synth if needed
-        if (!instruments[0] || !instruments[0][DEFAULTVOICE]) {
-            try {
-                that.activity.logo.synth.createDefaultSynth(0);
-                await that.activity.logo.synth.loadSynth(0, DEFAULTVOICE);
-            } catch (e) {
-                return;
-            }
-        }
-
-        // Set volume
-        try {
-            that.activity.logo.synth.setMasterVolume(PREVIEWVOLUME);
-            that.activity.logo.synth.setVolume(0, DEFAULTVOICE, PREVIEWVOLUME);
-        } catch (e) {
-            return;
-        }
-
-        // Trigger note with proper error handling
         if (!that._triggerLock) {
             that._triggerLock = true;
-            try {
-                const customID = that.customID || label;
-                let freq = null;
-
-                // Try to compute frequency from the temperament data directly.
-                // noteLabels[customID] contains the temperament data. Entries can be:
-                //   - Plain numbers (ratios) when no custom notes are defined
-                //   - Arrays [ratio, noteName, octave] when custom notes are saved
-                const tempData = noteLabels[customID];
-                if (tempData) {
-                    // Find the entry that matches the displayed note label.
-                    for (const pitchNum in tempData) {
-                        if (pitchNum === "pitchNumber" || pitchNum === "interval") continue;
-                        const entry = tempData[pitchNum];
-                        let entryLabel, entryRatio, entryOctave;
-
-                        if (typeof entry === "number") {
-                            // Equal-style format: key is the label, value is the ratio
-                            entryLabel = pitchNum;
-                            entryRatio = entry;
-                            entryOctave = 4; // default octave
-                        } else if (Array.isArray(entry) && entry.length >= 3) {
-                            // Custom format: [ratio, noteName, octave]
-                            entryLabel = entry[1];
-                            entryRatio = entry[0];
-                            entryOctave = Number(entry[2]);
-                        }
-
-                        if (entryLabel === note && entryRatio != null) {
-                            // Compute frequency: ratio * startingPitchFrequency * octaveOffset
-                            const startPitch = that.activity.logo.synth.startingPitch;
-                            const startFreq = Tone.Frequency(startPitch).toFrequency();
-                            const octaveDiff = octave - entryOctave;
-                            freq = entryRatio * startFreq * Math.pow(2, octaveDiff);
-                            break;
-                        }
-                    }
-                }
-
-                // If direct computation failed, try getCustomFrequency
-                if (freq === null || isNaN(freq)) {
-                    const noteWithOctave = note + octave;
-                    const result = that.activity.logo.synth.getCustomFrequency(
-                        noteWithOctave,
-                        customID
-                    );
-                    if (typeof result === "number" && !isNaN(result)) {
-                        freq = result;
-                    }
-                }
-
-                if (freq !== null && typeof freq === "number" && !isNaN(freq)) {
-                    // Play the frequency directly via synth.trigger
-                    await that.activity.logo.synth.trigger(
-                        0,
-                        freq,
-                        1 / 8,
-                        DEFAULTVOICE,
-                        null,
-                        null,
-                        false
-                    );
-                }
-            } catch (e) {
-                console.error("Error in custom pitch preview:", e);
+            const customID = that.customID || label;
+            // Pass note + octave directly to getCustomFrequency (bypass getNote
+            // which cannot parse custom note names like "C(+0¢)").
+            const no = that.activity.logo.synth.getCustomFrequency(
+                [note + octave],
+                customID
+            );
+            if (no !== undefined && no !== "undefined") {
+                instruments[0][DEFAULTVOICE].triggerAttackRelease(no, 1 / 8);
             }
         }
 
@@ -1729,7 +1654,7 @@ const piemenuAccidentals = (block, accidentalLabels, accidentalValues, accidenta
                 0,
                 Math.round(
                     (x + block.activity.blocksContainer.x) * block.activity.getStageScale() +
-                        canvasLeft
+                    canvasLeft
                 ) - 200
             )
         ) + "px";
@@ -1740,7 +1665,7 @@ const piemenuAccidentals = (block, accidentalLabels, accidentalValues, accidenta
                 0,
                 Math.round(
                     (y + block.activity.blocksContainer.y) * block.activity.getStageScale() +
-                        canvasTop
+                    canvasTop
                 ) - 200
             )
         ) + "px";
@@ -2663,7 +2588,7 @@ const piemenuBasic = (block, menuLabels, menuValues, selectedValue, colors) => {
                 0,
                 Math.round(
                     (x + block.activity.blocksContainer.x) * block.activity.getStageScale() +
-                        canvasLeft
+                    canvasLeft
                 ) - 200
             )
         ) + "px";
@@ -2674,7 +2599,7 @@ const piemenuBasic = (block, menuLabels, menuValues, selectedValue, colors) => {
                 0,
                 Math.round(
                     (y + block.activity.blocksContainer.y) * block.activity.getStageScale() +
-                        canvasTop
+                    canvasTop
                 ) - 200
             )
         ) + "px";
@@ -2777,7 +2702,7 @@ const piemenuBoolean = (block, booleanLabels, booleanValues, boolean) => {
                 0,
                 Math.round(
                     (x + block.activity.blocksContainer.x) * block.activity.getStageScale() +
-                        canvasLeft
+                    canvasLeft
                 ) - 200
             )
         ) + "px";
@@ -2788,7 +2713,7 @@ const piemenuBoolean = (block, booleanLabels, booleanValues, boolean) => {
                 0,
                 Math.round(
                     (y + block.activity.blocksContainer.y) * block.activity.getStageScale() +
-                        canvasTop
+                    canvasTop
                 ) - 200
             )
         ) + "px";
@@ -2912,7 +2837,7 @@ const piemenuChords = (block, selectedChord) => {
                 0,
                 Math.round(
                     (x + block.activity.blocksContainer.x) * block.activity.getStageScale() +
-                        canvasLeft
+                    canvasLeft
                 ) - 200
             )
         ) + "px";
@@ -2923,7 +2848,7 @@ const piemenuChords = (block, selectedChord) => {
                 0,
                 Math.round(
                     (y + block.activity.blocksContainer.y) * block.activity.getStageScale() +
-                        canvasTop
+                    canvasTop
                 ) - 200
             )
         ) + "px";
@@ -3103,7 +3028,7 @@ const piemenuVoices = (block, voiceLabels, voiceValues, categories, voice, rotat
                 0,
                 Math.round(
                     (x + block.activity.blocksContainer.x) * block.activity.getStageScale() +
-                        canvasLeft
+                    canvasLeft
                 ) - 200
             )
         ) + "px";
@@ -3114,7 +3039,7 @@ const piemenuVoices = (block, voiceLabels, voiceValues, categories, voice, rotat
                 0,
                 Math.round(
                     (y + block.activity.blocksContainer.y) * block.activity.getStageScale() +
-                        canvasTop
+                    canvasTop
                 ) - 200
             )
         ) + "px";
@@ -3249,7 +3174,7 @@ const piemenuIntervals = (block, selectedInterval) => {
                 0,
                 Math.round(
                     (x + block.activity.blocksContainer.x) * block.activity.getStageScale() +
-                        canvasLeft
+                    canvasLeft
                 ) - 200
             )
         ) + "px";
@@ -3260,7 +3185,7 @@ const piemenuIntervals = (block, selectedInterval) => {
                 0,
                 Math.round(
                     (y + block.activity.blocksContainer.y) * block.activity.getStageScale() +
-                        canvasTop
+                    canvasTop
                 ) - 200
             )
         ) + "px";
@@ -3745,7 +3670,7 @@ const piemenuModes = (block, selectedMode) => {
                 0,
                 Math.round(
                     (x + block.activity.blocksContainer.x) * block.activity.getStageScale() +
-                        canvasLeft
+                    canvasLeft
                 ) - 200
             )
         ) + "px";
@@ -3756,7 +3681,7 @@ const piemenuModes = (block, selectedMode) => {
                 0,
                 Math.round(
                     (y + block.activity.blocksContainer.y) * block.activity.getStageScale() +
-                        canvasTop
+                    canvasTop
                 ) - 200
             )
         ) + "px";
@@ -4315,9 +4240,9 @@ const piemenuKey = activity => {
                         activity.KeySignatureEnv[1];
                     activity.textMsg(
                         _("You have chosen key for your pitch preview.") +
-                            activity.KeySignatureEnv[0] +
-                            " " +
-                            activity.KeySignatureEnv[1]
+                        activity.KeySignatureEnv[0] +
+                        " " +
+                        activity.KeySignatureEnv[1]
                     );
                 }
             }

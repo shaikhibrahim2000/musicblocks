@@ -773,11 +773,24 @@ function Synth() {
                             const octaveDiff = octave - thisTemperament[pitchNumber][2];
                             return Number(
                                 thisTemperament[pitchNumber][0] *
-                                    startPitchFrequency *
-                                    Math.pow(getOctaveRatio(), octaveDiff)
+                                startPitchFrequency *
+                                Math.pow(getOctaveRatio(), octaveDiff)
                             );
                         }
                     }
+                }
+
+                // Fallback: handle pitch-index keys (e.g., "0", "1")
+                // for equal-style temperament data where entries are
+                // plain numbers (ratios) instead of [ratio, name, octave] arrays.
+                if (thisTemperament[oneNote] !== undefined) {
+                    const entry = thisTemperament[oneNote];
+                    const ratio = typeof entry === "number" ? entry : entry[0];
+                    const entryOctave = typeof entry === "number" ? 4 : Number(entry[2]);
+                    const octaveDiff = octave - entryOctave;
+                    return Number(
+                        ratio * startPitchFrequency * Math.pow(getOctaveRatio(), octaveDiff)
+                    );
                 }
             }
             return oneNote;
@@ -2830,10 +2843,10 @@ function Synth() {
                                 // Prepare a non-mutating activity proxy with a local logo fallback
                                 const defaultLogo = {
                                     synth: {
-                                        createDefaultSynth: () => {},
-                                        loadSynth: () => {},
-                                        setMasterVolume: () => {},
-                                        trigger: () => {},
+                                        createDefaultSynth: () => { },
+                                        loadSynth: () => { },
+                                        setMasterVolume: () => { },
+                                        trigger: () => { },
                                         inTemperament: "equal"
                                     },
                                     errorMsg: msg => {
@@ -2864,7 +2877,7 @@ function Synth() {
                                             }
                                         ],
                                         stageClick: false,
-                                        setPitchOctave: () => {},
+                                        setPitchOctave: () => { },
                                         findPitchOctave: () => 4,
                                         turtles: {
                                             _canvas: {
@@ -2881,7 +2894,7 @@ function Synth() {
                                     connections: [0], // Connect to the pitch block
                                     value: targetPitch.note,
                                     text: { text: targetPitch.note },
-                                    updateCache: () => {},
+                                    updateCache: () => { },
                                     _exitWheel: null,
                                     _pitchWheel: null,
                                     _accidentalsWheel: null,
@@ -2891,7 +2904,7 @@ function Synth() {
                                     container: {
                                         x: targetNoteSelector.offsetLeft,
                                         y: targetNoteSelector.offsetTop,
-                                        setChildIndex: () => {}
+                                        setChildIndex: () => { }
                                     },
                                     prevAccidental: "♮",
                                     name: "pitch", // This is needed for pitch preview
@@ -3351,7 +3364,7 @@ function Synth() {
                             const shouldLight =
                                 centsFromTarget < 0
                                     ? segmentCents <= 0 &&
-                                      Math.abs(segmentCents) <= Math.abs(centsFromTarget) // Flat side
+                                    Math.abs(segmentCents) <= Math.abs(centsFromTarget) // Flat side
                                     : segmentCents >= 0 && segmentCents <= centsFromTarget; // Sharp side
 
                             if (shouldLight || Math.abs(centsFromTarget - segmentCents) <= 5) {
