@@ -1113,7 +1113,7 @@ const piemenuCustomNotes = (block, noteLabels, customLabels, selectedCustom, sel
         docById("wheelDiv").style.display = "none";
     };
 
-    const __selectionChanged = () => {
+    const __selectionChanged = async () => {
         const label = that._customWheel.navItems[that._customWheel.selectedNavItemIndex].title;
         const note = that._cusNoteWheel.navItems[that._cusNoteWheel.selectedNavItemIndex].title;
         that.value = note;
@@ -1131,8 +1131,11 @@ const piemenuCustomNotes = (block, noteLabels, customLabels, selectedCustom, sel
         // Make sure text is on top.
         that.container.setChildIndex(that.text, that.container.children.length - 1);
         that.updateCache();
-
-        const obj = getNote(note, octave, 0, "C major", false, null, that.activity.errorMsg, label);
+        try {
+            await Tone.start();
+        } catch (e) {
+            console.debug("Tone.start() skipped or failed", e);
+        }
         const tur = that.activity.turtles.ithTurtle(0);
 
         if (!tur.singer.instrumentNames.includes(DEFAULTVOICE)) {
@@ -1146,7 +1149,10 @@ const piemenuCustomNotes = (block, noteLabels, customLabels, selectedCustom, sel
         if (!that._triggerLock) {
             that._triggerLock = true;
             // Get the frequency of the custom note for the preview.
-            const no = that.activity.logo.synth.getCustomFrequency([note + obj[1]], that.customID);
+            const customID = that.customID || label;
+            // Pass note + octave directly to getCustomFrequency (bypass getNote
+            // which cannot parse custom note names like "C(+0¢)").
+            const no = that.activity.logo.synth.getCustomFrequency([note + octave], customID);
             if (no !== undefined && no !== "undefined") {
                 instruments[0][DEFAULTVOICE].triggerAttackRelease(no, 1 / 8);
             }

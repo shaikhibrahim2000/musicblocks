@@ -1257,6 +1257,10 @@ class Blocks {
                             newBlockName = this.blockList[oldBlock].name;
                             newBlockValue = "sol";
                             break;
+                        case "customNote":
+                            newBlockName = "customNote";
+                            newBlockValue = "C(+0¢)";
+                            break;
                         case "scaledegree2":
                             newBlockName = this.blockList[oldBlock].name;
                             newBlockValue = "5";
