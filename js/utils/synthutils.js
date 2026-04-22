@@ -779,6 +779,19 @@ function Synth() {
                         }
                     }
                 }
+
+                // Fallback: handle pitch-index keys (e.g., "0", "1")
+                // for equal-style temperament data where entries are
+                // plain numbers (ratios) instead of [ratio, name, octave] arrays.
+                if (thisTemperament[oneNote] !== undefined) {
+                    const entry = thisTemperament[oneNote];
+                    const ratio = typeof entry === "number" ? entry : entry[0];
+                    const entryOctave = typeof entry === "number" ? 4 : Number(entry[2]);
+                    const octaveDiff = octave - entryOctave;
+                    return Number(
+                        ratio * startPitchFrequency * Math.pow(getOctaveRatio(), octaveDiff)
+                    );
+                }
             }
             return oneNote;
         };
