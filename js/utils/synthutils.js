@@ -1968,30 +1968,27 @@ function Synth() {
                 // A 500 ms safety buffer is added beyond the note duration to prevent
                 // premature disposal caused by audio-clock drift or scheduler jitter,
                 // which would otherwise produce crackling artefacts in long sessions.
-                setTimeout(
-                    () => {
-                        try {
-                            // Dispose of effects
-                            effectsToDispose.forEach(effect => {
-                                if (effect && typeof effect.dispose === "function") {
-                                    effect.dispose();
+                setTimeout(() => {
+                    try {
+                        // Dispose of effects
+                        effectsToDispose.forEach(effect => {
+                            if (effect && typeof effect.dispose === "function") {
+                                effect.dispose();
+                            }
+                        });
+
+                        // Dispose of filters
+                        if (temp_filters.length > 0) {
+                            temp_filters.forEach(filter => {
+                                if (filter && typeof filter.dispose === "function") {
+                                    filter.dispose();
                                 }
                             });
-
-                            // Dispose of filters
-                            if (temp_filters.length > 0) {
-                                temp_filters.forEach(filter => {
-                                    if (filter && typeof filter.dispose === "function") {
-                                        filter.dispose();
-                                    }
-                                });
-                            }
-                        } catch (e) {
-                            console.debug("Error disposing effects:", e);
                         }
-                    },
-                    beatValue * 1000 + 500
-                );
+                    } catch (e) {
+                        console.debug("Error disposing effects:", e);
+                    }
+                }, beatValue * 1000 + 500);
             }
         } catch (e) {
             console.error("Error in _performNotes:", e);

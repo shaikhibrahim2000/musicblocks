@@ -413,7 +413,7 @@ const piemenuPitches = (block, noteLabels, noteValues, accidentals, note, accide
                 0,
                 Math.round(
                     (x + block.activity.blocksContainer.x) * block.activity.getStageScale() +
-                    canvasLeft
+                        canvasLeft
                 ) - halfWheelSize
             )
         ) + "px";
@@ -424,7 +424,7 @@ const piemenuPitches = (block, noteLabels, noteValues, accidentals, note, accide
                 0,
                 Math.round(
                     (y + block.activity.blocksContainer.y) * block.activity.getStageScale() +
-                    canvasTop
+                        canvasTop
                 ) - halfWheelSize
             )
         ) + "px";
@@ -488,8 +488,8 @@ const piemenuPitches = (block, noteLabels, noteValues, accidentals, note, accide
             (block.name === "notename" &&
                 (block.connections[0] !== undefined
                     ? !["setkey", "setkey2"].includes(
-                        block.blocks.blockList[block.connections[0]].name
-                    )
+                          block.blocks.blockList[block.connections[0]].name
+                      )
                     : true)))
     ) {
         if (scale[6 - i][0] === FIXEDSOLFEGE[note] || scale[6 - i][0] === note) {
@@ -724,8 +724,8 @@ const piemenuPitches = (block, noteLabels, noteValues, accidentals, note, accide
             (that.name === "notename" &&
                 (that.connections[0] !== undefined
                     ? !["setkey", "setkey2"].includes(
-                        that.blocks.blockList[that.connections[0]].name
-                    )
+                          that.blocks.blockList[that.connections[0]].name
+                      )
                     : true))
         ) {
             let i = scale.indexOf(selection["note"]);
@@ -1120,7 +1120,7 @@ const piemenuCustomNotes = (block, noteLabels, customLabels, selectedCustom, sel
                 0,
                 Math.round(
                     (x + block.activity.blocksContainer.x) * block.activity.getStageScale() +
-                    canvasLeft
+                        canvasLeft
                 ) - 200
             )
         ) + "px";
@@ -1131,7 +1131,7 @@ const piemenuCustomNotes = (block, noteLabels, customLabels, selectedCustom, sel
                 0,
                 Math.round(
                     (y + block.activity.blocksContainer.y) * block.activity.getStageScale() +
-                    canvasTop
+                        canvasTop
                 ) - 200
             )
         ) + "px";
@@ -1258,10 +1258,7 @@ const piemenuCustomNotes = (block, noteLabels, customLabels, selectedCustom, sel
             const customID = that.customID || label;
             // Pass note + octave directly to getCustomFrequency (bypass getNote
             // which cannot parse custom note names like "C(+0¢)").
-            const no = that.activity.logo.synth.getCustomFrequency(
-                [note + octave],
-                customID
-            );
+            const no = that.activity.logo.synth.getCustomFrequency([note + octave], customID);
             if (no !== undefined && no !== "undefined") {
                 instruments[0][DEFAULTVOICE].triggerAttackRelease(no, 1 / 8);
             }
@@ -1654,7 +1651,7 @@ const piemenuAccidentals = (block, accidentalLabels, accidentalValues, accidenta
                 0,
                 Math.round(
                     (x + block.activity.blocksContainer.x) * block.activity.getStageScale() +
-                    canvasLeft
+                        canvasLeft
                 ) - 200
             )
         ) + "px";
@@ -1665,7 +1662,7 @@ const piemenuAccidentals = (block, accidentalLabels, accidentalValues, accidenta
                 0,
                 Math.round(
                     (y + block.activity.blocksContainer.y) * block.activity.getStageScale() +
-                    canvasTop
+                        canvasTop
                 ) - 200
             )
         ) + "px";
@@ -2588,7 +2585,7 @@ const piemenuBasic = (block, menuLabels, menuValues, selectedValue, colors) => {
                 0,
                 Math.round(
                     (x + block.activity.blocksContainer.x) * block.activity.getStageScale() +
-                    canvasLeft
+                        canvasLeft
                 ) - 200
             )
         ) + "px";
@@ -2599,7 +2596,7 @@ const piemenuBasic = (block, menuLabels, menuValues, selectedValue, colors) => {
                 0,
                 Math.round(
                     (y + block.activity.blocksContainer.y) * block.activity.getStageScale() +
-                    canvasTop
+                        canvasTop
                 ) - 200
             )
         ) + "px";
@@ -2702,7 +2699,7 @@ const piemenuBoolean = (block, booleanLabels, booleanValues, boolean) => {
                 0,
                 Math.round(
                     (x + block.activity.blocksContainer.x) * block.activity.getStageScale() +
-                    canvasLeft
+                        canvasLeft
                 ) - 200
             )
         ) + "px";
@@ -2713,7 +2710,7 @@ const piemenuBoolean = (block, booleanLabels, booleanValues, boolean) => {
                 0,
                 Math.round(
                     (y + block.activity.blocksContainer.y) * block.activity.getStageScale() +
-                    canvasTop
+                        canvasTop
                 ) - 200
             )
         ) + "px";
@@ -2837,7 +2834,7 @@ const piemenuChords = (block, selectedChord) => {
                 0,
                 Math.round(
                     (x + block.activity.blocksContainer.x) * block.activity.getStageScale() +
-                    canvasLeft
+                        canvasLeft
                 ) - 200
             )
         ) + "px";
@@ -2848,7 +2845,7 @@ const piemenuChords = (block, selectedChord) => {
                 0,
                 Math.round(
                     (y + block.activity.blocksContainer.y) * block.activity.getStageScale() +
-                    canvasTop
+                        canvasTop
                 ) - 200
             )
         ) + "px";
@@ -3028,7 +3025,7 @@ const piemenuVoices = (block, voiceLabels, voiceValues, categories, voice, rotat
                 0,
                 Math.round(
                     (x + block.activity.blocksContainer.x) * block.activity.getStageScale() +
-                    canvasLeft
+                        canvasLeft
                 ) - 200
             )
         ) + "px";
@@ -3039,7 +3036,7 @@ const piemenuVoices = (block, voiceLabels, voiceValues, categories, voice, rotat
                 0,
                 Math.round(
                     (y + block.activity.blocksContainer.y) * block.activity.getStageScale() +
-                    canvasTop
+                        canvasTop
                 ) - 200
             )
         ) + "px";
@@ -3174,7 +3171,7 @@ const piemenuIntervals = (block, selectedInterval) => {
                 0,
                 Math.round(
                     (x + block.activity.blocksContainer.x) * block.activity.getStageScale() +
-                    canvasLeft
+                        canvasLeft
                 ) - 200
             )
         ) + "px";
@@ -3185,7 +3182,7 @@ const piemenuIntervals = (block, selectedInterval) => {
                 0,
                 Math.round(
                     (y + block.activity.blocksContainer.y) * block.activity.getStageScale() +
-                    canvasTop
+                        canvasTop
                 ) - 200
             )
         ) + "px";
@@ -3636,18 +3633,15 @@ const piemenuModes = (block, selectedMode) => {
         docById("wheelnav-_exitWheel-title-1").style.fill = platformColor.textColor || "#ffffff";
         docById("wheelnav-_exitWheel-title-1").style.pointerEvents = "none";
         docById("wheelnav-_exitWheel-slice-1").style.pointerEvents = "none";
-        setTimeout(
-            () => {
-                const playButtonTitle = docById("wheelnav-_exitWheel-title-1");
-                const playButtonSlice = docById("wheelnav-_exitWheel-slice-1");
-                if (playButtonTitle && playButtonSlice) {
-                    playButtonTitle.style.fill = platformColor.textColor || "#000000";
-                    playButtonTitle.style.pointerEvents = "auto";
-                    playButtonSlice.style.pointerEvents = "auto";
-                }
-            },
-            (20 * 1000) / 10
-        );
+        setTimeout(() => {
+            const playButtonTitle = docById("wheelnav-_exitWheel-title-1");
+            const playButtonSlice = docById("wheelnav-_exitWheel-slice-1");
+            if (playButtonTitle && playButtonSlice) {
+                playButtonTitle.style.fill = platformColor.textColor || "#000000";
+                playButtonTitle.style.pointerEvents = "auto";
+                playButtonSlice.style.pointerEvents = "auto";
+            }
+        }, (20 * 1000) / 10);
 
         __playScale(activeTabs, 0);
     };
@@ -3670,7 +3664,7 @@ const piemenuModes = (block, selectedMode) => {
                 0,
                 Math.round(
                     (x + block.activity.blocksContainer.x) * block.activity.getStageScale() +
-                    canvasLeft
+                        canvasLeft
                 ) - 200
             )
         ) + "px";
@@ -3681,7 +3675,7 @@ const piemenuModes = (block, selectedMode) => {
                 0,
                 Math.round(
                     (y + block.activity.blocksContainer.y) * block.activity.getStageScale() +
-                    canvasTop
+                        canvasTop
                 ) - 200
             )
         ) + "px";
@@ -4240,9 +4234,9 @@ const piemenuKey = activity => {
                         activity.KeySignatureEnv[1];
                     activity.textMsg(
                         _("You have chosen key for your pitch preview.") +
-                        activity.KeySignatureEnv[0] +
-                        " " +
-                        activity.KeySignatureEnv[1]
+                            activity.KeySignatureEnv[0] +
+                            " " +
+                            activity.KeySignatureEnv[1]
                     );
                 }
             }
